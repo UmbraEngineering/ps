@@ -11,31 +11,25 @@ $ npm install ps
 ## Usage
 
 ```javascript
-var ps = require('ps');
+const ps = require('ps');
 
-// A simple pid lookup
-ps.lookup({ pid: 12345 }, function(err, proc) {
-    if (err) {throw err;}
-    if (proc) {
-        console.log(proc);  // Process name, something like "node" or "bash"
-    } else {
-        console.log('No such process');
-    }
-});
+const [ proc ] = await ps({ pid: 12345 });
 
-// Lookup processes in a list of pids and format them
-var query = {
-    pid: [123, 234, 345],  // Look up these pids
-    format: 'pid comm',    // Retrieve the pid and name, like running `ps -o pid= -o comm=`
-    parse: true            // Parse the output results into a 2D array
-};
-ps.lookup(query, function(err, results) {
-    if (err) {throw err;}
-    if (results) {
-        results.forEach(function(proc) {
-            console.log('PID: ' + proc[0] + '; Name: ' + proc[1]);
-        });
-    }
-});
+console.log(proc); // { "pid": 12345, "comm": "node" }
+
+const procs = await ps({ pid: [ 23456, 34567 ] });
+
+console.log(procs); // [ { "pid": 23456, "comm": "node" }, { "pid": 34567, "comm": "node" }
+
+// Available options
+{
+    pid: 12345 || [ 23456, 34567 ],  // Search by pid
+    ppid: 12345 || [ 23456, 34567 ],  // Search by parent pid
+    user: "bob",  // Search by user
+    group: "users",  // Search by group
+    command: "node",  // Search by command
+    all: true,  // List all processes
+    fields: [ 'pid', 'comm' ]  // The fields to return
+}
 ```
 
